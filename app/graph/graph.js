@@ -1,54 +1,35 @@
 angular.module('app.graph', [])
-  .directive('sigmaGraph', function() {
-    return {
-      restrict: 'E',
-      template: '<div id="graphContainer"></div>',
-      scope: {
+  .factory('GraphStore', function() {
+    var generateId = function() {
+      return Math.ceil(Math.random() * 1000);
+    };
 
-      },
-      link: function(scope, element, attrs) {
-        var s = new sigma({
-          container: 'graphContainer',
-          edgeColor: 'default',
-          defaultEdgeColor: 'grey'
-        });
-
-        // generate random nodes
-        for (var i = 0; i < 5; i++) {
-          s.graph.addNode({
-            id: 'n' + i,
-            x: Math.random(),
-            y: Math.random(),
-            size: 2,
-            // color: Math.random()
-          });
-        }
-
-        s.refresh();
-
+    var s = new sigma({
+      container: 'graphContainer',
+      settings: {
+        edgeColor: 'default',
+        defaultEdgeColor: 'grey'
       }
-    }
-  });
-  /*
-  .controller(function() {
-    var s = new sigma('graphContainer');
-
-    s.settings({
-      edgeColor: 'default',
-      defaultEdgeColor: 'grey'
     });
 
-    for (var i = 0; i < 5; i++) {
-      s.graph.addNode({
-        id: 'n' + i,
+    return {
+      generateId: generateId,
+      sigmaGraph: s
+    }
+  })
+  .controller('GraphCtrl', function($scope, GraphStore) {
+    $scope.sigmaGraph = GraphStore.sigmaGraph;
+
+    for (var i = 0; i < 4; i++) {
+      $scope.sigmaGraph.graph.addNode({
+        id: 'n' + GraphStore.generateId(),
         x: Math.random(),
         y: Math.random(),
-        size: 2,
+        size: 2
         // color: Math.random()
       })
     }
 
     // Finally, let's ask our sigma instance to refresh:
-    s.refresh();
+    $scope.sigmaGraph.refresh();
   });
-   */

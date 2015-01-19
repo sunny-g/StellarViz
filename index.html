@@ -19,17 +19,17 @@
 </head>
 
 <body ng-app="app">
-  <div id="controlPanel">
-    <input type="button" value="Add Node"/>
+  <div id="controlPanel" ng-controller="ControlPanelCtrl">
+    <input type="button" value="Add Node" ng-click="addNode()"/>
   </div>
 
-  <sigma-graph></sigma-graph>
+  <div id="graphContainer" ng-controller="GraphCtrl"></div>
 
   <script src="node_modules/angular/angular.min.js"></script>
   <script src="node_modules/sigma/build/sigma.min.js"></script>
+
   <script src="app/graph/graph.js"></script>
   <script src="app/panel/panel.js"></script>
-
   <script src="app/app.js"></script>
 </body>
 </html>

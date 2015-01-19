@@ -1,3 +1,4 @@
 angular.module('app', [
-  'app.graph'
+  'app.graph',
+  'app.panel'
 ]);
