@@ -1,35 +1,62 @@
 angular.module('app.graph', [])
   .factory('GraphStore', function() {
-    var generateId = function() {
-      return Math.ceil(Math.random() * 1000);
-    };
+
+    sigma.renderers.def = sigma.renderers.canvas;
 
     var s = new sigma({
       container: 'graphContainer',
       settings: {
-        edgeColor: 'default',
-        defaultEdgeColor: 'grey'
+        defaultEdgeColor: 'grey',
+        edgeLabelSize: 'proportional'
       }
     });
 
+    sigma.plugins.dragNodes(s, s.renderers[0]);
+
+    var Node = function(name) {
+      this.label = name;
+      this.id = 'n' + this.generateId();
+      this.x = Math.random();
+      this.y = Math.random();
+      this.size = 2;
+      this.balance = 0;
+    };
+
+    Node.prototype.generateId = function() {
+      return Math.ceil(Math.random() * 100);
+    };
+
+    var Edge = function(node1Id, node2Id, limit) {
+      this.source = node1Id;
+      this.target = node2Id;
+      this.limit = limit;
+      this.id = this.source + this.target;
+      this.type = 'arrow';
+      this.label = s.graph.nodes(node1Id).label +
+        '>' +
+        s.graph.nodes(node2Id).label;
+      // this.size = limit;
+    };
+
     return {
-      generateId: generateId,
-      sigmaGraph: s
+      Node: Node,
+      Edge: Edge,
+      sigma: s
     }
   })
   .controller('GraphCtrl', function($scope, GraphStore) {
-    $scope.sigmaGraph = GraphStore.sigmaGraph;
+    $scope.sigma = GraphStore.sigma;
 
-    for (var i = 0; i < 4; i++) {
-      $scope.sigmaGraph.graph.addNode({
-        id: 'n' + GraphStore.generateId(),
-        x: Math.random(),
-        y: Math.random(),
-        size: 2
-        // color: Math.random()
-      })
+    // create some nodes
+    for (var i = 0; i < 2; i++) {
+      GraphStore.sigma.graph.addNode(new GraphStore.Node(i));
+      GraphStore.sigma.refresh();
     }
 
+    GraphStore.sigma.bind('dragNode', function(e) {
+      console.log(e.data.node);
+    });
+
     // Finally, let's ask our sigma instance to refresh:
-    $scope.sigmaGraph.refresh();
+    $scope.sigma.refresh();
   });

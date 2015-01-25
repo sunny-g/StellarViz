@@ -1,0 +1,29 @@
+<div id="controlPanel">
+  <form action="">
+    <label id="addNode">
+      <input type="text" ng-model="nodeName"/>
+      <input type="button" value="Add Node" ng-click="addNode(nodeName)"/>
+    </label>
+  </form>
+
+  <form action="">
+    <label id="addEdge">
+      <select name="" id="" ng-model="node1" ng-options="node.label for node in nodes"></select>
+      <select name="" id="" ng-model="node2" ng-options="node.label for node in nodes"></select>
+      <input type="text" value="Gift Amount" ng-model="limit"/>
+      <input type="button" value="Add Edge" ng-click="addEdge(node1, node2, limit)"/>
+    </label>
+  </form>
+
+  <form action="">
+    <label id="edgeSlider">
+      <select name="" id="" ng-model="selectedEdge" ng-options="edge.label for edge in edges"></select>
+      <span id="">
+        <span id="node1-limit">{{}}</span>
+        <input type="range" min=""/>
+        <span id="node2-limit">{{}}</span>
+      </span>
+    </label>
+  </form>
+
+</div>
