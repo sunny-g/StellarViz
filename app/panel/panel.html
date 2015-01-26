@@ -20,15 +20,12 @@
       <select name="" id="" ng-model="selectedEdge" ng-options="edge.label for edge in edges"></select>
       <span id="">
 
-        <span ng-init="sourceNode = getNode(selectedEdge.source)" ng-if="getNode(selectedEdge.source)">{{sourceNode.label}}'s Balance: {{sourceNode.balance}}</span>
-
+        <span ng-if="sourceNode">{{sourceNode.label}}'s Balance: {{sourceNode.balance}}</span>
         <slider
             floor="-{{!!getOppositeEdgeFromId(selectedEdge.id) ? getOppositeEdgeFromId(selectedEdge.id).limit : 0}}"
             ceiling="{{selectedEdge.limit}}"
             ng-model="sliderValue"></slider>
-
-        <span ng-init="targetNode = getNode(selectedEdge.target)" ng-if="getNode(selectedEdge.target)">{{targetNode.label}}'s Balance: {{targetNode.balance}} |
-          (<b>sliderValue</b>: {{sliderValue}})</span>
+        <span ng-if="targetNode">{{targetNode.label}}'s Balance: {{targetNode.balance}} | (<b>sliderValue</b>: {{sliderValue}})</span>
 
       </span>
     </label>

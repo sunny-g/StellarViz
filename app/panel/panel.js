@@ -19,6 +19,7 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
 
         $scope.addNode = function(name) {
           GraphStore.sigma.graph.addNode(new GraphStore.Node(name));
+          delete $scope.nodeName;
           refreshGraph();
         };
 
@@ -32,22 +33,31 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
           } else {
             GraphStore.sigma.graph.addEdge(new GraphStore.Edge(n1.id, n2.id, limit));
           }
+          delete $scope.node1;
+          delete $scope.node2;
+          delete $scope.limit;
           refreshGraph();
         };
 
         /*
         ** sliderValue watcher **
           on change, it needs to:
-            update source node balance
-            update target node balance
+            update source node balance (whats the calculation?)
+            update target node balance (whats the calculation?)
          */
+        $scope.$watch('sliderValue', function(sliderValue) {
+          var source = $scope.sourceNode;
+          var target = $scope.targetNode;
 
-        /*
-        ** slider selectedEdge watcher **
-          on change, it needs to:
-            update sourceNode
-            update targetNode
-         */
+          refreshGraph();
+        });
+
+        $scope.$watch('selectedEdge', function(edge) {
+          if (!edge) { return; }
+          console.log(edge, $scope);
+          $scope.sourceNode = $scope.getNode(edge.source);
+          $scope.targetNode = $scope.getNode(edge.target);
+        });
 
 //        $scope.animate = function() {
 //          sigma.plugins.animate(
