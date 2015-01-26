@@ -10,7 +10,7 @@
     <label id="addEdge">
       <select name="" id="" ng-model="node1" ng-options="node.label for node in nodes"></select>
       <select name="" id="" ng-model="node2" ng-options="node.label for node in nodes"></select>
-      <input type="text" value="Gift Amount" ng-model="limit"/>
+      <input type="text" value="Gift Amount" ng-model="limit" ng-pattern="/^\d+$/"/>
       <input type="button" value="Add Edge" ng-click="addEdge(node1, node2, limit)"/>
     </label>
   </form>
@@ -19,10 +19,13 @@
     <label id="edgeSlider">
       <select name="" id="" ng-model="selectedEdge" ng-options="edge.label for edge in edges"></select>
       <span id="">
-        <span ng-if="getNodeFromGraph(selectedEdge.source)">{{getNodeFromGraph(selectedEdge.source)}}</span>
-        <input type="range" min=""/>
-        <span ng-if="getNodeFromGraph(selectedEdge.target)">{{getNodeFromGraph(selectedEdge.target)}}</span>
-        <!--<span id="node2-limit" ng-init="node = getNodeFromGraph(selectedEdge.target)">{{node.label}}</span>-->
+        <span ng-init="sourceNode = getNode(selectedEdge.source)" ng-if="getNode(selectedEdge.source)">{{sourceNode.label}}'s Balance: {{sourceNode.balance}} | {{sliderValue}}</span>
+        <slider
+            floor="-{{!!getOppositeEdgeFromId(selectedEdge.id) ? getOppositeEdgeFromId(selectedEdge.id).limit : 0}}"
+            ceiling="{{selectedEdge.limit}}"
+            ng-model="sliderValue"></slider>
+        <span ng-init="targetNode = getNode(selectedEdge.target)" ng-if="getNode(selectedEdge.target)">{{targetNode.label}}'s Balance: {{targetNode.balance}} |
+          (<em>sliderValue</em>: {{sliderValue}}</span>
       </span>
     </label>
   </form>

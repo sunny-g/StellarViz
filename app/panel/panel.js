@@ -1,18 +1,9 @@
-angular.module('app.panel', ['app.graph'])
+angular.module('app.panel', ['app.graph', 'ui.slider'])
   .directive('controlPanel', function(GraphStore) {
     return {
       restrict: 'E',
       templateUrl: 'app/panel/panel.html',
       controller: function($scope) {
-        refreshGraph();
-
-        $scope.getNodeFromGraph = function(nodeId) {
-          return GraphStore.sigma.graph.nodes(nodeId);
-        };
-
-        $scope.getEdgeFromGraph = function(edgeId) {
-          return GraphStore.sigma.graph.edges(edgeId);
-        };
 
         $scope.addNode = function(name) {
           GraphStore.sigma.graph.addNode(new GraphStore.Node(name));
@@ -23,6 +14,10 @@ angular.module('app.panel', ['app.graph'])
           GraphStore.sigma.graph.addEdge(new GraphStore.Edge(n1.id, n2.id, limit));
           refreshGraph();
         };
+
+        $scope.getNode = GraphStore.getNode;
+        $scope.getEdge = GraphStore.getEdge;
+        $scope.getOppositeEdgeFromId = GraphStore.getOppositeEdgeFromId;
 
 
 //        $scope.animate = function() {
@@ -44,6 +39,8 @@ angular.module('app.panel', ['app.graph'])
           $scope.nodes = GraphStore.sigma.graph.nodes();
           $scope.edges = GraphStore.sigma.graph.edges();
         }
+
+        refreshGraph();
       }
     }
   });
