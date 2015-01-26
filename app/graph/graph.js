@@ -33,11 +33,15 @@ angular.module('app.graph', [])
       this.source = node1Id;
       this.target = node2Id;
       this.limit = limit;
-      this.id = this.source + '|' + this.target;
+      this.id = this.generateId(node1Id, node2Id);
       this.type = 'arrow';
       this.label = s.graph.nodes(node1Id).label +
         '>' + s.graph.nodes(node2Id).label;
       // this.size = limit;
+    };
+
+    Edge.prototype.generateId = function(node1Id, node2Id) {
+      return node1Id + '|' + node2Id;
     };
 
     var getNode = function(nodeId) {
@@ -50,8 +54,8 @@ angular.module('app.graph', [])
 
     var getOppositeEdgeFromId = function(edgeId) {
       if (edgeId) {
-        edgeId = edgeId.split('|');
-        return s.graph.edges(edgeId[1] + '|' + edgeId[0]);
+        var nodeIds = edgeId.split('|');
+        return s.graph.edges(Edge.prototype.generateId(nodeIds[1], nodeIds[0]));
       }
     };
 
