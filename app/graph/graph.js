@@ -15,7 +15,7 @@ angular.module('app.graph', [])
 
     var Node = function(name) {
       this.label = name;
-      this.id = 'n' + this.generateId();
+      this.id = 'n' + name;// + this.generateId();
       this.x = Math.random();
       this.y = Math.random();
       this.size = 2;
@@ -33,8 +33,7 @@ angular.module('app.graph', [])
       this.id = this.source + this.target;
       this.type = 'arrow';
       this.label = s.graph.nodes(node1Id).label +
-        '>' +
-        s.graph.nodes(node2Id).label;
+        '>' + s.graph.nodes(node2Id).label;
       // this.size = limit;
     };
 

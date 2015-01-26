@@ -19,9 +19,10 @@
     <label id="edgeSlider">
       <select name="" id="" ng-model="selectedEdge" ng-options="edge.label for edge in edges"></select>
       <span id="">
-        <span id="node1-limit">{{}}</span>
+        <span ng-if="getNodeFromGraph(selectedEdge.source)">{{getNodeFromGraph(selectedEdge.source)}}</span>
         <input type="range" min=""/>
-        <span id="node2-limit">{{}}</span>
+        <span ng-if="getNodeFromGraph(selectedEdge.target)">{{getNodeFromGraph(selectedEdge.target)}}</span>
+        <!--<span id="node2-limit" ng-init="node = getNodeFromGraph(selectedEdge.target)">{{node.label}}</span>-->
       </span>
     </label>
   </form>

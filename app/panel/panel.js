@@ -6,21 +6,24 @@ angular.module('app.panel', ['app.graph'])
       controller: function($scope) {
         refreshGraph();
 
+        $scope.getNodeFromGraph = function(nodeId) {
+          return GraphStore.sigma.graph.nodes(nodeId);
+        };
+
+        $scope.getEdgeFromGraph = function(edgeId) {
+          return GraphStore.sigma.graph.edges(edgeId);
+        };
+
         $scope.addNode = function(name) {
           GraphStore.sigma.graph.addNode(new GraphStore.Node(name));
           refreshGraph();
         };
 
         $scope.addEdge = function(n1, n2, limit) {
-          var n1Id = n1.id;
-          var n2Id = n2.id;
-          GraphStore.sigma.graph.addEdge(new GraphStore.Edge(n1Id, n2Id, limit));
+          GraphStore.sigma.graph.addEdge(new GraphStore.Edge(n1.id, n2.id, limit));
           refreshGraph();
         };
 
-        $scope.currentEdge = function(edge) {
-          console.log(edge);
-        };
 
 //        $scope.animate = function() {
 //          sigma.plugins.animate(
@@ -34,7 +37,6 @@ angular.module('app.panel', ['app.graph'])
 //            }
 //          );
 //        }
-
 
         function refreshGraph() {
           GraphStore.sigma.refresh();
