@@ -39,6 +39,10 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
           refreshGraph();
         };
 
+        $scope.deleteEdge = function(edge) {
+
+        };
+
         /*
         ** sliderValue watcher **
           on change, it needs to:

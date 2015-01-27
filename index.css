@@ -10,3 +10,29 @@ body {
 #controlPanel {
 
 }
+
+div#edgeSlider {
+    display: inline-table;
+}
+
+slider {
+    height: 30px;
+    width: 50%;
+    display: table-cell;
+}
+
+span.nodeInfo {
+    display: table-cell;
+    margin: 0 auto;
+    text-align: center;
+    width: 25%;
+}
+
+slider div.bar {
+    height: 5px;
+}
+
+slider div.handle {
+    position: relative;
+    top: -8px;
+}

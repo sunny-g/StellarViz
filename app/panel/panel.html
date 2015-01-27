@@ -7,7 +7,7 @@
   </form>
 
   <form action="">
-    <label id="addEdge">
+    <label id="addOrDeleteEdge">
       <select name="" id="" ng-model="node1" ng-options="node.label for node in nodes"></select>
       <select name="" id="" ng-model="node2" ng-options="node.label for node in nodes"></select>
       <input type="text" value="Gift Amount" ng-model="limit" ng-pattern="/^\d+$/"/>
@@ -16,18 +16,20 @@
   </form>
 
   <form action="">
-    <label id="edgeSlider">
+    <label id="edgeModifier">
       <select name="" id="" ng-model="selectedEdge" ng-options="edge.label for edge in edges"></select>
-      <span id="">
+      <input type="button" value="Remove Edge" ng-click="deleteEdge(selectedEdge)"/>
 
-        <span ng-if="sourceNode">{{sourceNode.label}}'s Balance: {{sourceNode.balance}}</span>
+      <div id="edgeSlider">
+        <span class="nodeInfo" ng-if="sourceNode">{{sourceNode.label}}'s Balance: {{sourceNode.balance}}</span>
         <slider
+            ng-if="selectedEdge"
             floor="-{{!!getOppositeEdgeFromId(selectedEdge.id) ? getOppositeEdgeFromId(selectedEdge.id).limit : 0}}"
             ceiling="{{selectedEdge.limit}}"
             ng-model="sliderValue"></slider>
-        <span ng-if="targetNode">{{targetNode.label}}'s Balance: {{targetNode.balance}} | (<b>sliderValue</b>: {{sliderValue}})</span>
+        <span class="nodeInfo" ng-if="targetNode">{{targetNode.label}}'s Balance: {{targetNode.balance}} | (<b>sliderValue</b>: {{sliderValue}})</span>
+      </div>
 
-      </span>
     </label>
   </form>
 
