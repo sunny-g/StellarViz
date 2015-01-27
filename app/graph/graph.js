@@ -22,7 +22,7 @@ angular.module('app.graph', [])
       this.x = Math.random();
       this.y = Math.random();
       this.size = 2;
-      this.balance = 0;
+      // this.balance = {};
     };
 
     Node.prototype.generateId = function() {
@@ -38,6 +38,7 @@ angular.module('app.graph', [])
       this.label = s.graph.nodes(node1Id).label +
         '>' + s.graph.nodes(node2Id).label;
       // this.size = limit;
+      this.balance = 0;   // from perspective of edge.source
     };
 
     Edge.prototype.generateId = function(node1Id, node2Id) {
@@ -52,7 +53,7 @@ angular.module('app.graph', [])
       if (edgeId) { return s.graph.edges(edgeId); }
     };
 
-    var getOppositeEdgeFromId = function(edgeId) {
+    var getOppositeEdge = function(edgeId) {
       if (edgeId) {
         var nodeIds = edgeId.split('|');
         return s.graph.edges(Edge.prototype.generateId(nodeIds[1], nodeIds[0]));
@@ -65,7 +66,7 @@ angular.module('app.graph', [])
       sigma: s,
       getNode: getNode,
       getEdge: getEdge,
-      getOppositeEdgeFromId: getOppositeEdgeFromId
+      getOppositeEdge: getOppositeEdge
     }
   })
   .controller('GraphCtrl', function($scope, GraphStore) {

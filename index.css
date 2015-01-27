@@ -12,6 +12,7 @@ body {
 }
 
 div#edgeSlider {
+    margin: 10px auto;
     display: inline-table;
 }
 
