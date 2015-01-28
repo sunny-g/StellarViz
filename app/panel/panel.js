@@ -8,19 +8,24 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
         var Node = GraphStore.Node;
         var Edge = GraphStore.Edge;
         $scope.getNode = GraphStore.getNode;
+        $scope.getNodes = GraphStore.sigma.graph.nodes;
         $scope.getEdge = GraphStore.getEdge;
+        $scope.getEdges = GraphStore.sigma.graph.edges;
         $scope.getOppositeEdge = GraphStore.getOppositeEdge;
-        $scope.getNodeBalance = GraphStore.sigma.graph.getNodeBalance;
+        $scope.setNodeBalance = GraphStore.sigma.graph.setNodeBalance;
+        $scope.getNeighborIndex = GraphStore.sigma.graph.getNeighborIndex;
 
         $scope.selectedEdge = {};
+        $scope.sliderValue = 0;
         $scope.sliderCeiling = 0;
         $scope.sliderFloor = 0;
 
         function refreshGraph() {
+          updateAllNodeTotalBalances();
+
           GraphStore.sigma.refresh();
-          // console.log($scope);
-          $scope.nodes = GraphStore.sigma.graph.nodes();
-          $scope.edges = GraphStore.sigma.graph.edges();
+          $scope.nodes = $scope.getNodes();
+          $scope.edges = $scope.getEdges();
         }
 
         $scope.addNode = function(name) {
@@ -30,11 +35,6 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
         };
 
         $scope.addEdge = function(n1, n2, limit) {
-          // this function extends trust limit and updates node balances
-          // needs to:
-            // create new edge or update limit of old one
-            // create opp edge or update limit of old one
-
           limit = parseFloat(limit);
           var edgeId = Edge.prototype.generateId(n1.id, n2.id);
           var oppEdgeId = Edge.prototype.generateId(n2.id, n1.id);
@@ -57,7 +57,7 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
           delete $scope.node2;
           delete $scope.limit;
           refreshGraph();
-          console.log($scope);
+          // console.log($scope);
         };
 
         $scope.deleteEdge = function(edge) {
@@ -82,11 +82,26 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
 //          return 0 - $scope.sourceNode.balance;
         }
 
-        var changeEdgeBalances = function(edge1, edge2, sliderValue) {
+        function changeEdgeBalances(edge1, edge2, sliderValue) {
+          if (!edge1 ||
+            !Object.prototype.hasOwnProperty.call(edge1, 'limit') ||
+            !edge2 ||
+            !Object.prototype.hasOwnProperty.call(edge2, 'limit')) {
+            return;
+          }
           sliderValue = parseFloat(sliderValue);
           edge1.balance = edge2.limit - sliderValue;
           edge2.balance = edge1.limit + sliderValue;
-        };
+        }
+
+        function updateAllNodeTotalBalances() {
+          var nodes = $scope.getNodes();
+          var edges = $scope.getEdges();
+          if (!nodes || nodes.length === 0 || !edges || edges.length === 0) {
+            return;
+          }
+          nodes.forEach($scope.setNodeBalance);
+        }
 
         /*
         ** sliderValue watcher **
@@ -98,32 +113,15 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
           if (!sliderValue) {
             return;
           }
-
-          changeEdgeBalances($scope.selectedEdge, $scope.oppositeOfSelectedEdge, sliderValue);
+          changeEdgeBalances($scope.getEdge($scope.selectedEdge.id), $scope.getEdge($scope.oppositeOfSelectedEdge.id), sliderValue);
           refreshGraph();
         });
 
-//        $scope.$watch(['selectedEdge', 'oppositeOfSelectedEdge'], function(edges) {
-//          console.log('watching selected and opposite', edges, $scope);
-//          if (!edges || !edges[0] || !edges[1]) { return; }
-//          var selectedEdge = edges[0];
-//          var oppositeOfSelectedEdge = edges[1];
-//
-//          $scope.sourceNode = $scope.getNode(selectedEdge.source);
-//          $scope.targetNode = $scope.getNode(selectedEdge.target);
-//          $scope.oppositeOfSelectedEdge = oppositeOfSelectedEdge;
-//
-//          $scope.sliderCeiling = $scope.oppositeOfSelectedEdge ?
-//            $scope.oppositeOfSelectedEdge.limit : 0;
-//          $scope.sliderFloor = -selectedEdge.limit;
-//          // $scope.sliderValue = defaultSliderValue().toString();
-//        });
         $scope.$watch('selectedEdge', function(edge) {
           if (!edge) { return; }
           $scope.sourceNode = $scope.getNode(edge.source);
           $scope.targetNode = $scope.getNode(edge.target);
           $scope.oppositeOfSelectedEdge = $scope.getOppositeEdge(edge.id) || {};
-
           $scope.sliderCeiling = $scope.oppositeOfSelectedEdge ?
             $scope.oppositeOfSelectedEdge.limit : 0;
           $scope.sliderFloor = -edge.limit;
@@ -132,7 +130,6 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
         $scope.$watch('oppositeOfSelectedEdge.limit', function(edgeLimit) {
           // necessary in case the active edgePair is being udpated
           $scope.sliderCeiling = edgeLimit;
-
         });
 
         $scope.$watch('selectedEdge.limit', function(edgeLimit) {

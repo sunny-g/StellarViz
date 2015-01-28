@@ -4,11 +4,11 @@ angular.module('app.graph', [])
     /*
     CONFIG
      */
-    sigma.classes.graph.addMethod('logNeighbors', function() {
-      return this.allNeighborsIndex['na'];
+    sigma.classes.graph.addMethod('getNeighborIndex', function(nodeId) {
+      return this.allNeighborsIndex[nodeId];
     });
 
-    sigma.classes.graph.addMethod('getNodeBalance', function(nodeId) {
+    sigma.classes.graph.addMethod('setNodeBalance', function(node) {
       /*
       neighborIndex = {
         nodeName: {
@@ -20,15 +20,14 @@ angular.module('app.graph', [])
       }
        */
       var balance = 0;
-      _.forIn(this.allNeighborsIndex[nodeId], function(edgeList) {
+      _.forIn(this.allNeighborsIndex[node.id], function(edgeList) {
         balance += _.reduce(edgeList, function(prev, currentEdge) {
-          if (currentEdge.source === nodeId) {
-            console.log(prev, currentEdge.balance);
+          if (currentEdge.source === node.id) {
             return currentEdge.balance;
           }
         }, 0);
       });
-      return balance;
+      node.totalBalance = balance;
     });
 
     sigma.renderers.def = sigma.renderers.canvas;

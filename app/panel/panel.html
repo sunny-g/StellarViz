@@ -19,6 +19,15 @@
     </form>
   </div>
 
+  <div id="nodeBalance">
+    <form action="">
+      <label>
+        <select ng-model="nodeBalance" ng-options="node.label for node in nodes"></select>
+        <span ng-show="nodeBalance">{{nodeBalance.label}}'s Total Balance: {{nodeBalance.totalBalance}}</span>
+      </label>
+    </form>
+  </div>
+
   <div id="edgeModifier">
     <form action="">
       <label>
