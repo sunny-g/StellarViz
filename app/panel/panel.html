@@ -24,7 +24,7 @@
       <label>
 
         <select name="" id="" ng-model="selectedEdge" ng-options="edge.label for edge in edges"></select>
-        <input type="button" value="Remove Edge" ng-click="deleteEdge(selectedEdge)"/>
+        <!--<input type="button" value="Remove Edge" ng-click="deleteEdge(selectedEdge)"/>-->
 
         <div id="edgeSlider">
           <span class="nodeInfo" ng-if="sourceNode">{{sourceNode.label}}'s Balance: {{selectedEdge.balance}}</span>

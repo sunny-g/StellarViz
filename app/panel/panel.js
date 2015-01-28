@@ -10,9 +10,9 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
         $scope.getNode = GraphStore.getNode;
         $scope.getEdge = GraphStore.getEdge;
         $scope.getOppositeEdge = GraphStore.getOppositeEdge;
+        $scope.getNodeBalance = GraphStore.sigma.graph.getNodeBalance;
 
         $scope.selectedEdge = {};
-//        $scope.oppositeOfSelectedEdge = {};
         $scope.sliderCeiling = 0;
         $scope.sliderFloor = 0;
 
@@ -64,12 +64,6 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
 
         };
 
-        function changeNodeBalanceOnEdgeChange(n1, n2, edgeId, limit) {
-          // debugger;
-//          n2.balance[edgeId] = (n2.balance[edgeId] + limit) || limit;
-//          n1.balance[edgeId] = n1.balance[edgeId] || 0;
-        }
-
         function defaultSliderValue() {
           // returns the defaultSliderValue for the chosen selectedEdge
 //          return $scope.oppositeOfSelectedEdge && $scope.sourceNode ?
@@ -90,7 +84,6 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
 
         var changeEdgeBalances = function(edge1, edge2, sliderValue) {
           sliderValue = parseFloat(sliderValue);
-          // debugger;
           edge1.balance = edge2.limit - sliderValue;
           edge2.balance = edge1.limit + sliderValue;
         };

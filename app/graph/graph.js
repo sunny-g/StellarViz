@@ -4,6 +4,33 @@ angular.module('app.graph', [])
     /*
     CONFIG
      */
+    sigma.classes.graph.addMethod('logNeighbors', function() {
+      return this.allNeighborsIndex['na'];
+    });
+
+    sigma.classes.graph.addMethod('getNodeBalance', function(nodeId) {
+      /*
+      neighborIndex = {
+        nodeName: {
+          connectedNodeName: {
+            edge1: Edge,
+            edge2: Edge
+          }
+        }
+      }
+       */
+      var balance = 0;
+      _.forIn(this.allNeighborsIndex[nodeId], function(edgeList) {
+        balance += _.reduce(edgeList, function(prev, currentEdge) {
+          if (currentEdge.source === nodeId) {
+            console.log(prev, currentEdge.balance);
+            return currentEdge.balance;
+          }
+        }, 0);
+      });
+      return balance;
+    });
+
     sigma.renderers.def = sigma.renderers.canvas;
 
     var s = new sigma({
@@ -22,7 +49,7 @@ angular.module('app.graph', [])
       this.x = Math.random();
       this.y = Math.random();
       this.size = 2;
-      // this.balance = {};
+      this.totalBalance = 0;
     };
 
     Node.prototype.generateId = function() {
