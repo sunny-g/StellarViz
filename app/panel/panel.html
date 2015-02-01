@@ -36,13 +36,13 @@
         <!--<input type="button" value="Remove Edge" ng-click="deleteEdge(selectedEdge)"/>-->
 
         <div id="edgeSlider">
-          <span class="nodeInfo" ng-if="sourceNode">{{sourceNode.label}}'s Balance: {{selectedEdge.balance}}</span>
+          <span class="nodeInfo" ng-show="sourceNode">{{sourceNode.label}}'s Balance: {{selectedEdge.balance}}</span>
           <slider
               floor="{{sliderFloor}}"
               ceiling="{{sliderCeiling}}"
               ng-model="sliderValue"
-              ng-show="selectedEdge.id"></slider>
-          <span class="nodeInfo" ng-if="targetNode">{{targetNode.label}}'s Balance: {{oppositeOfSelectedEdge.balance}} | (<b>sliderValue</b>: {{sliderValue}}</span>
+              ng-show="showSlider"></slider>
+          <span class="nodeInfo" ng-show="targetNode">{{targetNode.label}}'s Balance: {{oppositeOfSelectedEdge.balance}} | (<b>sliderValue</b>: {{sliderValue}}</span>
         </div>
 
       </label>

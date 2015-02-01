@@ -16,10 +16,20 @@ div#edgeSlider {
     display: inline-table;
 }
 
+slider.ng-hide {
+    display: table-cell !important;
+    visibility: hidden !important;
+}
+
 slider {
     height: 30px;
     width: 50%;
     display: table-cell;
+}
+
+span.nodeInfo.ng-hide:not(.ng-animate) {
+    display: table-cell !important;
+    visibility: hidden !important;
 }
 
 span.nodeInfo {
@@ -37,3 +47,5 @@ slider div.handle {
     position: relative;
     top: -8px;
 }
+
+
