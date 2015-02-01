@@ -11,23 +11,27 @@ angular.module('app.graph', [])
     sigma.classes.graph.addMethod('setNodeBalance', function(node) {
       /*
       neighborIndex = {
-        nodeName: {
-          connectedNodeName: {
-            edge1: Edge,
-            edge2: Edge
+        "na": {   // node.id
+          "nb": {    // connectedNodeName
+            "na|nb": Edge,
+            "nb|na": Edge
           }
         }
       }
        */
       var balance = 0;
-      _.forIn(this.allNeighborsIndex[node.id], function(edgeList) {
-        balance += _.reduce(edgeList, function(prev, currentEdge) {
-          if (currentEdge.source === node.id) {
-            return currentEdge.balance;
+      var neighborIndex = this.allNeighborsIndex[node.id];
+      // can be simplified using reduce et al
+      for (var connectedNodeName in neighborIndex) {
+        var edgeList = neighborIndex[connectedNodeName];
+        for (var edgeId in edgeList) {
+          var edge = edgeList[edgeId];
+          if (edge.source === node.id) {
+            balance += edge.balance;
           }
-        }, 0);
-      });
-      node.totalBalance = balance;
+        }
+      }
+      node.totalBalance = balance || 0;
     });
 
     sigma.renderers.def = sigma.renderers.canvas;
