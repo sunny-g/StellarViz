@@ -4,14 +4,16 @@
   <link rel="stylesheet" type="text/css" href="index.css">
   <link rel="stylesheet" type="text/css" href="node_modules/angular-slider/slider.css"/>
 
-  <title>StellarViz</title>
+  <title>WhuffieViz</title>
 </head>
 
 <body ng-app="app">
-  <h2>Stellar Visualizer</h2>
+  <h2>Whuffie Visualizer</h2>
 
   <control-panel></control-panel>
-  <div id="graphContainer" ng-controller="GraphCtrl"></div>
+  <span id="graphContainer"></span>
+  <!-- <span id="edgeTableContainer" ng-controller="EdgeTableCtrl"></span> -->
+  <edge-table></edge-table>
 
   <script src="node_modules/lodash/index.js"></script>
   <script src="node_modules/angular/angular.min.js"></script>
@@ -22,6 +24,7 @@
   <script src="node_modules/sigma/plugins/sigma.plugins.animate/sigma.plugins.animate.js"></script>
 
   <script src="app/graph/graph.js"></script>
+  <script src="app/graph/table.js"></script>
   <script src="app/panel/panel.js"></script>
   <script src="app/app.js"></script>
 </body>

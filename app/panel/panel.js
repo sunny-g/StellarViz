@@ -5,15 +5,17 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
       templateUrl: 'app/panel/panel.html',
       controller: function($scope, $timeout) {
 
-        var Node = GraphStore.Node;
-        var Edge = GraphStore.Edge;
+        var Node = $scope.Node = GraphStore.Node;
+        var Edge = $scope.Edge = GraphStore.Edge;
+        var sigma = $scope.sigma = GraphStore.sigma;
+
         $scope.getNode = GraphStore.getNode;
-        $scope.getNodes = GraphStore.sigma.graph.nodes;
         $scope.getEdge = GraphStore.getEdge;
-        $scope.getEdges = GraphStore.sigma.graph.edges;
         $scope.getOppositeEdge = GraphStore.getOppositeEdge;
-        $scope.setNodeBalance = GraphStore.sigma.graph.setNodeBalance;
-        $scope.getNeighborIndex = GraphStore.sigma.graph.getNeighborIndex;
+        $scope.getNodes = GraphStore.getNodes;
+        $scope.getEdges = GraphStore.getEdges;
+        $scope.setNodeBalance = GraphStore.setNodeBalance;
+        $scope.getNeighborIndex = GraphStore.getNeighborIndex;
 
         $scope.selectedEdge;
         $scope.showSlider;
@@ -21,21 +23,14 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
         $scope.sliderCeiling = 1;
         $scope.sliderFloor = -1;
 
-        function refreshGraph() {
-          updateAllNodeTotalBalances();
-
-          GraphStore.sigma.refresh();
-          $scope.nodes = $scope.getNodes();
-          $scope.edges = $scope.getEdges();
-        }
-
         $scope.addNode = function(name) {
-          GraphStore.sigma.graph.addNode(new Node(name));
+          sigma.graph.addNode(new Node(name));
           delete $scope.nodeName;
           refreshGraph();
         };
 
-        $scope.addEdge = function(n1, n2, limit) {
+        $scope.giftWhuffie = function(n1, n2, limit) {
+          // TODO: throw error is NaN
           limit = parseFloat(limit);
           var edgeId = Edge.prototype.generateId(n1.id, n2.id);
           var oppEdgeId = Edge.prototype.generateId(n2.id, n1.id);
@@ -43,13 +38,13 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
           var edge = $scope.getEdge(edgeId);
 
           if (!edge) {
-            GraphStore.sigma.graph.addEdge(new GraphStore.Edge(n1.id, n2.id, limit));
+            sigma.graph.addEdge(new Edge(n1.id, n2.id, limit));
           } else {
             edge.limit += limit;
           }
 
           if (!$scope.getEdge(oppEdgeId)) {
-            GraphStore.sigma.graph.addEdge(new GraphStore.Edge(n2.id, n1.id, 0));
+            sigma.graph.addEdge(new Edge(n2.id, n1.id, 0));
           }
           var oppEdge = $scope.getEdge(oppEdgeId);
           oppEdge.balance += limit;
@@ -61,33 +56,10 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
           // console.log($scope);
         };
 
-        $scope.deleteEdge = function(edge) {
+        $scope.deleteEdge = function(edge) {};
 
-        };
 
-        function changeEdgeBalances(edge1, edge2, sliderValue) {
-          if (!edge1 ||
-              !edge2 ||
-            !Object.prototype.hasOwnProperty.call(edge1, 'limit') ||
-            !Object.prototype.hasOwnProperty.call(edge2, 'limit')) {
-            return;
-          }
-          sliderValue = parseFloat(sliderValue);
-          edge1.balance = edge2.limit - sliderValue;
-          edge2.balance = edge1.limit + sliderValue;
-        }
-
-        function updateAllNodeTotalBalances() {
-          var nodes = $scope.getNodes();
-          var edges = $scope.getEdges();
-          if (!nodes || !edges || nodes.length === 0 || edges.length === 0) {
-            return;
-          }
-          nodes.forEach($scope.setNodeBalance);
-        }
-
-        /*
-        ** sliderValue watcher **
+        /********** sliderValue watchers **********
           on sliderChange, it needs to:
             update source node balance (whats the calculation?)
             update target node balance (whats the calculation?)
@@ -96,7 +68,11 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
           if (!sliderValue) {
             return;
           }
-          changeEdgeBalances($scope.getEdge($scope.selectedEdge.id), $scope.getEdge($scope.oppositeOfSelectedEdge.id), sliderValue);
+          changeEdgeBalances(
+            $scope.getEdge($scope.selectedEdge.id), 
+            $scope.getEdge($scope.oppositeOfSelectedEdge.id),
+            sliderValue
+          );
           refreshGraph();
         });
 
@@ -130,18 +106,50 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
           // necessary in case the active edgePair is being udpated
           $scope.sliderFloor = -edgeLimit;
         });
-//        $scope.animate = function() {
-//          sigma.plugins.animate(
-//            GraphStore.sigma,
-//            {
-//              size: 5,
-//              color: '#333333'
-//            },
-//            {
-//              nodes: [$scope.nodesList[0], $scope.nodesList[1]]
-//            }
-//          );
-//        }
+
+        /*
+          $scope.animate = function() {
+            sigma.plugins.animate(
+              sigma,
+              {
+                size: 5,
+                color: '#333333'
+              }, {
+                nodes: [$scope.nodesList[0], $scope.nodesList[1]]
+              }
+            );
+          };
+         */
+
+        /************ helper functions ************/
+        function changeEdgeBalances(edge1, edge2, sliderValue) {
+          if (!edge1 ||
+              !edge2 ||
+            !Object.prototype.hasOwnProperty.call(edge1, 'limit') ||
+            !Object.prototype.hasOwnProperty.call(edge2, 'limit')) {
+            return;
+          }
+          sliderValue = parseFloat(sliderValue);
+          edge1.balance = edge2.limit - sliderValue;
+          edge2.balance = edge1.limit + sliderValue;
+        }
+
+        function updateAllNodeTotalBalances() {
+          var nodes = $scope.getNodes();
+          var edges = $scope.getEdges();
+          if (!nodes || !edges || nodes.length === 0 || edges.length === 0) {
+            return;
+          }
+          nodes.forEach($scope.setNodeBalance);
+        }
+
+        function refreshGraph() {
+          updateAllNodeTotalBalances();
+
+          sigma.refresh();
+          $scope.nodes = $scope.getNodes();
+          $scope.edges = $scope.getEdges();
+        }
 
         refreshGraph();
       }

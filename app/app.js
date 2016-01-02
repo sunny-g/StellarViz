@@ -1,4 +1,5 @@
 angular.module('app', [
+  'app.panel',
   'app.graph',
-  'app.panel'
+  'app.table'
 ]);

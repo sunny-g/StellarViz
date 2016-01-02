@@ -1,0 +1,16 @@
+<span>
+  <table border="1">
+    <tr>
+      <th>Source</th>
+      <th>Balance</th>
+      <th>Max Possible Balance</th>
+      <th>Target</th>
+    </tr>
+    <tr ng-repeat="edge in edges">
+      <td>{{edge.sourceLabel}}</td>
+      <td>{{edge.balance}}</td>
+      <td>{{maxLimit(edge)}}</td>
+      <td>{{edge.targetLabel}}</td>
+    </tr>
+  </table>
+</span>

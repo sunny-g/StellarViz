@@ -10,14 +10,14 @@ angular.module('app.graph', [])
 
     sigma.classes.graph.addMethod('setNodeBalance', function(node) {
       /*
-      neighborIndex = {
-        "na": {   // node.id
-          "nb": {    // connectedNodeName
-            "na|nb": Edge,
-            "nb|na": Edge
+        neighborIndex = {
+          "na": {   // node.id
+            "nb": {    // connectedNodeName
+              "na|nb": Edge,
+              "nb|na": Edge
+            }
           }
         }
-      }
        */
       var balance = 0;
       var neighborIndex = this.allNeighborsIndex[node.id];
@@ -39,8 +39,12 @@ angular.module('app.graph', [])
     var s = new sigma({
       container: 'graphContainer',
       settings: {
-        defaultEdgeColor: 'grey',
-        edgeLabelSize: 'proportional'
+        defaultNodeColor: '#666',
+        edgeColor: 'source',
+        edgeLabelSize: 'proportional',
+        minEdgeSize: 10,
+        arrowSizeRatio: 10,
+        minArrowSize: 10
       }
     });
 
@@ -48,7 +52,7 @@ angular.module('app.graph', [])
 
     var Node = function(name) {
       this.label = name;
-      this.id = 'n' + name;// + this.generateId();
+      this.id = this.getNodeIdByLabel(name);// + this.generateId();
       this.x = Math.random();
       this.y = Math.random();
       this.size = 2;
@@ -59,14 +63,26 @@ angular.module('app.graph', [])
       return Math.ceil(Math.random() * 100);
     };
 
+    Node.prototype.getNodeIdByLabel = function(label) {
+      return 'n' + label;
+    };
+
+    Node.prototype.getNodeByLabel = function(label) {
+      return s.graph.nodes(Node.prototype.getNodeIdByLabel(label));
+    };
+
     var Edge = function(node1Id, node2Id, limit) {
-      this.source = node1Id;
-      this.target = node2Id;
+      var node1 = s.graph.nodes(node1Id);
+      this.source = this.sourceId = node1Id;
+      this.sourceLabel = node1.label
+      var node2 = s.graph.nodes(node2Id);
+      this.target = this.targetId = node2Id;
+      this.targetLabel = node2.label
+
       this.limit = limit;
       this.id = this.generateId(node1Id, node2Id);
       this.type = 'arrow';
-      this.label = s.graph.nodes(node1Id).label +
-        '>' + s.graph.nodes(node2Id).label;
+      this.label = this.sourceLabel + ' -> ' + this.targetLabel;
       // this.size = limit;
       this.balance = 0;   // from perspective of edge.source
     };
@@ -75,44 +91,51 @@ angular.module('app.graph', [])
       return node1Id + '|' + node2Id;
     };
 
-    var getNode = function(nodeId) {
+    Edge.prototype.nodeIdsFromEdgeId = function(edgeId) {
+      return edgeId.split('|');
+    };
+
+    function getNode(nodeId) {
       if (nodeId) { return s.graph.nodes(nodeId); }
-    };
+    }
 
-    var getEdge = function(edgeId) {
+    function getEdge(edgeId) {
       if (edgeId) { return s.graph.edges(edgeId); }
-    };
+    }
 
-    var getOppositeEdge = function(edgeId) {
+    function getOppositeEdge(edgeId) {
       if (edgeId) {
         var nodeIds = edgeId.split('|');
         return s.graph.edges(Edge.prototype.generateId(nodeIds[1], nodeIds[0]));
       }
-    };
-
-    return {
-      Node: Node,
-      Edge: Edge,
-      sigma: s,
-      getNode: getNode,
-      getEdge: getEdge,
-      getOppositeEdge: getOppositeEdge
-    }
-  })
-  .controller('GraphCtrl', function($scope, GraphStore) {
-    $scope.sigma = GraphStore.sigma;
-
-    // create some nodes
-    var alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k'];
-    for (var i = 0; i < 2; i++) {
-      GraphStore.sigma.graph.addNode(new GraphStore.Node(alpha[i]));
-      GraphStore.sigma.refresh();
     }
 
-    GraphStore.sigma.bind('dragNode', function(e) {
+    /************************************/
+    /*          initialization          */
+    /************************************/
+    var alpha = ['alex', 'beth', 'miguel'];
+    // create two nodes
+    for (var i = 0; i < 3; i++) {
+      s.graph.addNode(new Node(alpha[i]));
+    }
+
+    s.bind('dragNode', function(e) {
       console.log(e.data.node);
     });
 
     // Finally, let's ask our sigma instance to refresh:
-    $scope.sigma.refresh();
+    s.refresh();
+
+    return {
+      sigma: s,
+      Node: Node,
+      Edge: Edge,
+      getNode: getNode,
+      getEdge: getEdge,
+      getNodes: s.graph.nodes,
+      getEdges: s.graph.edges,
+      getOppositeEdge: getOppositeEdge,
+      setNodeBalance: s.graph.setNodeBalance,
+      getNeighborIndex: s.graph.getNeighborIndex
+    };
   });
