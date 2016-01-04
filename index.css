@@ -7,8 +7,8 @@ body {
     height: 100%;
 }
 
-#controlPanel {
-
+#sliderCell {
+    width: 100%;
 }
 
 div#edgeSlider {
@@ -48,4 +48,6 @@ slider div.handle {
     top: -8px;
 }
 
-
+td.nodeBalanceInfo {
+    width: 10em;
+}

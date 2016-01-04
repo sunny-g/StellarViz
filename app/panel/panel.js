@@ -4,19 +4,9 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
       restrict: 'E',
       templateUrl: 'app/panel/panel.html',
       controller: function($scope, $timeout) {
-
-        var Node = $scope.Node = GraphStore.Node;
-        var Edge = $scope.Edge = GraphStore.Edge;
-        var sigma = $scope.sigma = GraphStore.sigma;
-
-        $scope.getNode = GraphStore.getNode;
-        $scope.getEdge = GraphStore.getEdge;
-        $scope.getOppositeEdge = GraphStore.getOppositeEdge;
-        $scope.getNodes = GraphStore.getNodes;
-        $scope.getEdges = GraphStore.getEdges;
-        $scope.setNodeBalance = GraphStore.setNodeBalance;
-        $scope.getNeighborIndex = GraphStore.getNeighborIndex;
-
+        $scope.nodes = GraphStore.getNodes();
+        $scope.edges = GraphStore.getEdges();
+        $scope.nameToAdd = ''
         $scope.selectedEdge;
         $scope.showSlider;
         $scope.sliderValue;
@@ -24,63 +14,52 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
         $scope.sliderFloor = -1;
 
         $scope.addNode = function(name) {
-          sigma.graph.addNode(new Node(name));
-          delete $scope.nodeName;
+          GraphStore.addNode(name);
+          $scope.nameToAdd = '';
           refreshGraph();
         };
 
-        $scope.giftWhuffie = function(n1, n2, limit) {
-          // TODO: throw error is NaN
-          limit = parseFloat(limit);
-          var edgeId = Edge.prototype.generateId(n1.id, n2.id);
-          var oppEdgeId = Edge.prototype.generateId(n2.id, n1.id);
-
-          var edge = $scope.getEdge(edgeId);
-
-          if (!edge) {
-            sigma.graph.addEdge(new Edge(n1.id, n2.id, limit));
-          } else {
-            edge.limit += limit;
-          }
-
-          if (!$scope.getEdge(oppEdgeId)) {
-            sigma.graph.addEdge(new Edge(n2.id, n1.id, 0));
-          }
-          var oppEdge = $scope.getEdge(oppEdgeId);
-          oppEdge.balance += limit;
-
-          delete $scope.node1;
-          delete $scope.node2;
+        $scope.giftWhuffie = function(n1, n2, giftOrNix) {
+          GraphStore.giftWhuffie(n1, n2, giftOrNix);
           delete $scope.limit;
           refreshGraph();
-          // console.log($scope);
+        };
+
+        $scope.spendWhuffie = function(n1, n2, amount) {
+          GraphStore.spendWhuffie(n1, n2, amount);
+          delete $scope.spendAmount;
+          refreshGraph();
         };
 
         $scope.deleteEdge = function(edge) {};
 
-
-        /********** sliderValue watchers **********
-          on sliderChange, it needs to:
-            update source node balance (whats the calculation?)
-            update target node balance (whats the calculation?)
-         */
+        /********** watchers **********/
         $scope.$watch('sliderValue', function(sliderValue) {
           if (!sliderValue) {
             return;
           }
-          changeEdgeBalances(
-            $scope.getEdge($scope.selectedEdge.id), 
-            $scope.getEdge($scope.oppositeOfSelectedEdge.id),
-            sliderValue
-          );
+
+          var edge = GraphStore.getEdge($scope.selectedEdge.id);
+          var oppEdge = GraphStore.getOppositeEdge(edge.id);
+
+          if (!edge ||
+            !oppEdge ||
+            !Object.prototype.hasOwnProperty.call(edge, 'limit') ||
+            !Object.prototype.hasOwnProperty.call(oppEdge, 'limit')) {
+            return;
+          }
+
+          sliderValue = parseFloat(sliderValue);
+          edge.balance = oppEdge.limit - sliderValue;
+          oppEdge.balance = edge.limit + sliderValue;
           refreshGraph();
         });
 
         $scope.$watch('selectedEdge', function(edge) {
           if (!edge) { return; }
-          $scope.sourceNode = $scope.getNode(edge.source);
-          $scope.targetNode = $scope.getNode(edge.target);
-          $scope.oppositeOfSelectedEdge = $scope.getOppositeEdge(edge.id) || {};
+          $scope.sourceNode = GraphStore.getNode(edge.source);
+          $scope.targetNode = GraphStore.getNode(edge.target);
+          $scope.oppositeOfSelectedEdge = GraphStore.getOppositeEdge(edge.id) || {};
           $scope.sliderCeiling = $scope.oppositeOfSelectedEdge ?
             $scope.oppositeOfSelectedEdge.limit : 0;
           $scope.sliderFloor = -edge.limit;
@@ -122,33 +101,10 @@ angular.module('app.panel', ['app.graph', 'ui.slider'])
          */
 
         /************ helper functions ************/
-        function changeEdgeBalances(edge1, edge2, sliderValue) {
-          if (!edge1 ||
-              !edge2 ||
-            !Object.prototype.hasOwnProperty.call(edge1, 'limit') ||
-            !Object.prototype.hasOwnProperty.call(edge2, 'limit')) {
-            return;
-          }
-          sliderValue = parseFloat(sliderValue);
-          edge1.balance = edge2.limit - sliderValue;
-          edge2.balance = edge1.limit + sliderValue;
-        }
-
-        function updateAllNodeTotalBalances() {
-          var nodes = $scope.getNodes();
-          var edges = $scope.getEdges();
-          if (!nodes || !edges || nodes.length === 0 || edges.length === 0) {
-            return;
-          }
-          nodes.forEach($scope.setNodeBalance);
-        }
-
         function refreshGraph() {
-          updateAllNodeTotalBalances();
-
-          sigma.refresh();
-          $scope.nodes = $scope.getNodes();
-          $scope.edges = $scope.getEdges();
+          GraphStore.refreshGraph();
+          $scope.nodes = GraphStore.getNodes();
+          $scope.edges = GraphStore.getEdges();
         }
 
         refreshGraph();
